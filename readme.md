@@ -1,7 +1,6 @@
 
-# I am motors and parts
+# iAMotors7Parts
 
-A multi vendor ecommerce
 
 
 ## Installation
