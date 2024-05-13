@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Roboto", sans-serif;
+    /* background-color: #f5f5f5; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .carousel {
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .carousel .main-div {
+    position: relative;
+    min-width: 300px;
+    height: 550px;
+    margin: 0 auto;
+    display: flex;
+    transition: transform 1s;
+    transform: translateX(-100%);
+  }
+  .carousel .main-div .carousel-item {
+    flex-shrink: 0;
+    height: 100%;
+    width: 100%;
+    font-size: 2rem;
+    color: white;
+  }
+  .carousel .main-div .carousel-item img {
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+    /* object-fit: cover; */
+    object-fit: contain;
+  }
+  
+  .carousel.next .main-div .carousel-item {
+    transform: translateX(100%);
+    animation: slideLeft 0.8s 0.5s linear forwards;
+  }
+  
+  @keyframes slideLeft {
+    to {
+      transform: translateX(0%);
+    }
+  }
+  .carousel.prev .main-div .carousel-item {
+    transform: translateX(-100%);
+    animation: slideRight 0.8s 0.5s linear forwards;
+  }
+  
+  @keyframes slideRight {
+    to {
+      transform: translateX(0%);
+    }
+  }
+  .carousel .btn-left,
+  .carousel .btn-right {
+    height: 35px;
+    width: 35px;
+    border: none;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: large;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    cursor: pointer;
+  }
+  .carousel .btn-left:hover,
+  .carousel .btn-right:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #000;
+  }
+  
+  .carousel .btn-left {
+    left: 0;
+  }
+  
+  .carousel.next .btn-left,
+  .carousel.prev .btn-left {
+    pointer-events: none;
+    cursor: none;
+  }
+  
+  .carousel .btn-right {
+    right: 0;
+  }
+  
+  .carousel.next .btn-right,
+  .carousel.prev .btn-right {
+    pointer-events: none;
+    cursor: none;
+  }/*# sourceMappingURL=style.css.map */
