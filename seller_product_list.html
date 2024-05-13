@@ -1,0 +1,44 @@
+{% extends 'store/seller_base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock styles %}
+
+{% block content %}
+
+    <div class="p-5 text-center">
+        <h1 class="text-4xl font-bold">My Products</h1>
+    </div>
+
+    <div class="w-full md:w-11/12 mx-auto bg-white p-4 md:p-10 rounded-lg shadow-sm">
+        <div class="w-full flex justify-between items-center p-4">
+            <form action="{% url 'store:seller_product_list' %}" method="get" class="flex flex-row content-center items-center">
+                <input type="text" name="search" id="search" placeholder="Search" class="rounded-md p-1.5 text-sm text-gray-900 border-[1px] border-[#e8e1fb]">
+                <button type="submit"><ion-icon name="search" class="text-2xl ms-2"></ion-icon></button> 
+            </form>
+
+            <a href="{% url 'store:seller_product_create' %}" class="bg-green-400 py-3 px-5 rounded-md border border-green-400 text-white hover:bg-white hover:text-green-400">Add new</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for product in products %}
+                <div class="product-card shadow-lg rounded-lg bg-[#f4f5f6] flex flex-col justify-between"  x-data="{ showDescription: false }">
+                    <img class="object-cover h-[250px] w-full rounded-lg" src="{{ product.image.url }}" alt="{{ product.name }}" height="300">
+                    <div class="product-info p-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ product.name }}</h3>
+                        <p class="text-lg font-semibold text-gray-900">${{ product.price }}</p>
+                    </div>
+                    <div class="card-btns p-4 flex justify-between items-center relative">
+                        <a href="{% url 'store:seller_product_detail' product.id %}" class="btn p-2 px-5 bg-amber-300 hover:bg-amber-400 rounded-lg z-2" @mouseover="showDescription = true" @mouseover.outside="showDescription = false">Details</a>
+
+                        <p x-show="showDescription" x-transition:enter.duration.500ms x-transition:leave.duration.400ms x-cloak class="desc text-sm text-gray-500 h-[90px] overflow-hidden absolute -top-24 left-0 z-1 bg-amber-200 p-5 rounded-lg w-full">{{ product.description|truncatechars:150 }}</p>
+
+                        <a href="{% url 'store:seller_product_update' product.id %}" class="btn p-2 px-5 bg-blue-300 hover:bg-blue-400 rounded-lg">Edit</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends 'store/seller_base.html' %}
+{% load static %}
+
+{% block content %}    
+<div class="my-10 mx-auto w-11/12 px-4">    
+    <!-- product detail -->
+    <section class="product-detail">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="product-image">
+                <img class="object-cover h-[300px] md:h-[500px] w-full rounded-lg" src="{{ product.image.url }}" alt="{{ product.name }}" height="300">
+            </div>
+            <div class="product-info flex flex-col justify-around">
+                <div>
+                    <div class="flex justify-between px-4">
+                        <h3 class="text-xl mb-2 font-semibold text-gray-900">{{ product.name }}</h3>
+                        <h4 class="text-lg mb-2 font-semobold text-gray-700">{{ product.brand }}</h4>
+
+                    </div>
+                    <p class="text-sm text-gray-500 px-4">{{ product.description }}</p>
+                    <div class="flex justify-between px-4 my-3">
+                        {% if product.model %}
+                            <p class="">{{ product.model }}</p>
+                        {% endif %}
+                        {% if product.year %}
+                            <p class="">{{ product.year }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="flex justify-between px-4">
+                        <p class="text-lg font-semibold text-gray-900">${{ product.price }}</p>
+                        <p class="text-lg font-semibold text-gray-900"><span class="text-sm text-gray-400">Seller: </span>{{ product.seller }}</p>
+                    </div>
+                </div>
+                <div class="product-btns px-4 my-4">
+                    <a href="{% url 'store:seller_product_update' product.id %}" class="btn p-2 px-5 bg-blue-300 hover:bg-blue-400 rounded-lg">Edit</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}

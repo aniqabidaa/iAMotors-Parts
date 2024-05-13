@@ -1,0 +1,58 @@
+{% extends 'store/seller_base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        .edit-form input, .edit-form textarea {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            color: #555;
+        }
+
+        .edit-form select {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            color: #555;
+        }
+
+        .edit-form  a {
+            color: rgb(96, 165, 250);
+        }
+    </style>
+{% endblock styles %}
+
+{% block content %}
+
+    <div class="p-5 text-center">
+        {% if product %}
+            <h1 class="text-4xl font-bold">Edit {{ product.name|truncatechars:50 }}</h1>
+        {% else %}
+            <h1 class="text-4xl font-bold">Add new product</h1>
+        {% endif %}
+        {% comment %} <h1 class="text-4xl font-bold">Edit</h1> {% endcomment %}
+    </div>
+
+    <div class="w-full md:w-11/12 mx-auto bg-white p-4 md:p-10 rounded-lg shadow-sm text-blu">
+        <form class="edit-form" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for p in form %}
+                <div class="my-2">
+                    <label for="{{ p.id_for_label }}" class="block text-sm font-semibold text-gray-900 mb-2">{{ p.label }}</label>
+                    {{ p }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="bg-green-400 py-3 px-5 rounded-md border border-green-400 text-white hover:bg-white hover:text-green-400">Save</button>
+        </form>
+    </div>
+
+    
+
+
+{% endblock content %}

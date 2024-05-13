@@ -1,0 +1,38 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+    <div class="p-4 mx-auto w-11/12 my-7 relative" x-data="{showError: true}">
+        {% if error_message %}
+            <div class="w-10/12 md:w-6/12 left-[50%] -translate-x-[50%] -top-4 rounded-sm bg-red-400 py-2 px-4 flex justify-between items-center absolute" x-show="showError">
+                <p class="text-white">{{ error_message }}</p>
+                <span class="text-white cursor-pointer" @click="showError = false">X</span>
+            </div>
+        {% endif %}
+        
+        <div class="w-10/12 md:w-6/12 mx-auto">
+            <form class="border p-4 rounded-sm border-gray-900/10 mx-auto" action="" method="post">
+                <h1 class="text-4xl mb-4 font-bold text-gray-900/70 text-center">Become a Seller</h1>
+                {% csrf_token %}
+                <div class="my-2">
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="business" id="id_business" autocomplete="business" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="business">
+                    </div>
+                </div>
+
+                <div class="w-full flex flex-row justify-center items-center">
+                    <button type="submit" class="rounded-md bg-indigo-600 p-2 w-full text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Become Seller</button>
+                </div>
+
+                <div class="flex flex-row justify-between p-2 gap-4">
+                    <a href="{% url 'store:seller_login' %}" class="border-b-[1px] border-gray-300 hover:border-blue-500 hover:text-blue-500">Log in as a seller</a>
+                </div>
+            </form>
+    
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+</script>
+{% endblock scripts %}

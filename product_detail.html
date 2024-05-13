@@ -1,0 +1,95 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock styles %}
+
+{% block content %}
+    <div class="my-10 mx-auto w-11/12 px-4">    
+        <!-- product detail -->
+        <section class="product-detail">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="product-image">
+                    <img class="object-cover h-[300px] md:h-[500px] w-full rounded-lg" src="{{ product.image.url }}" alt="{{ product.name }}" height="300">
+                </div>
+
+                <div class="product-info flex flex-col justify-around">
+                    <div>
+                        <div class="flex justify-between px-4">
+                            <h3 class="text-xl mb-2 font-semibold text-gray-900">{{ product.name }}</h3>
+                            <h4 class="text-lg mb-2 font-semobold text-gray-700">{{ product.brand }}</h4>
+                        </div>
+                        <div class="px-4 pb-2">
+                            {% with ''|center:product.avg_rating as range %}
+                                {% for _ in range %}
+                                    <span class="fa fa-star checked text-yellow-300"></span>
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                        <p class="text-sm text-gray-500 px-4">{{ product.description }}</p>
+                        <div class="flex justify-between px-4 my-3">
+                            {% if product.model %}
+                                <p class="">{{ product.model }}</p>
+                            {% endif %}
+                            {% if product.year %}
+                                <p class="">{{ product.year }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="flex justify-between px-4">
+                            <p class="text-lg font-semibold text-gray-900">${{ product.price }}</p>
+                            <p class="text-lg font-semibold text-gray-900"><span class="text-sm text-gray-400">Seller: </span>{{ product.seller }}</p>
+                        </div>
+                    </div>
+                    <div class="product-btns px-4 my-4">
+                        <a href="{% url 'store:add_to_cart' product.id %}" class="btn p-2 px-5 bg-amber-300 hover:bg-amber-400 rounded-lg">Add to cart</a>
+                        <!-- <a href="" class="btn p-2 px-5 bg-indigo-300 hover:bg-indigo-400 rounded-lg">Buy now</a> -->
+                    </div>
+                </div>
+
+                <div class="product-review">
+                    <hr>
+                    <div class="grid px-4 mt-3">
+                        <h3 class="text-xl mb-2 font-semibold text-gray-900">Reviews</h3>
+                        {% for review in product.review_set.all %}
+                            <hr>
+                            <div class="review p-2 mb-3">
+                                <div class="flex justify-between py-1 items-center">
+                                    <p>
+                                        {{ review.buyer.first_name }} {{ review.buyer.last_name }} &nbsp;
+                                        {% with ''|center:review.rating as range %}
+                                            {% for _ in range %}
+                                                <span class="fa fa-star checked text-yellow-300"></span>
+                                            {% endfor %}
+                                        {% endwith %}
+                                    </p>
+                                    <span class="text-xs text-gray-400">{{ review.review_date|date }} {{ review.review_date|time }}</span>
+                                </div>
+                                <p class="px-2 text-sm text-gray-500">{{ review.comment }}</p>
+                            </div>
+                            <hr>
+                        {% endfor %}
+
+                        {% if request.user.is_authenticated %}
+                            <form action="{% url 'store:add_review' product.id %}" method="post" class="grid gap-2 py-2">
+                                {% csrf_token %}
+                                <textarea class="p-2 px-4 bg-gray-100 rounded-lg min-w-[100px]" name="comment" rows="5" placeholder="Write a review"></textarea>
+                                <select name="rating" id="rating" class="p-2 px-4 bg-gray-100 rounded-lg" required>
+                                    <option value="">Rating</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <button type="submit" class="btn p-2 px-5 bg-amber-300 hover:bg-amber-400 rounded-lg">Submit</button>
+                            </form>
+                        {% else %}
+                            <p class="text-gray-500">Please <a href="{% url 'store:login' %}?next={{ request.path }}" class="text-blue-500">login</a> to write a review</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock content %}

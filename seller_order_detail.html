@@ -1,0 +1,157 @@
+{% extends 'store/seller_base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="p-5 text-center">
+        <h1 class="text-4xl font-bold">Order {{ order.id }}</h1>
+    </div>
+
+    <section class="bg-white orders w-full md:w-8/12 mx-auto my-8 px-2 md:px-10 py-5 shadow-lg rounded-lg">
+        <div class="w-full grid grid-cols-2 gap-2">
+            <div class="col-span-2 font-bold flex justify-center pr-8 mt-5 mb-2">Order Info</div>
+            <div class="flex justify-end pr-8">
+                <span>Order Id:</span>
+            </div>
+            <div>
+                {{ order.id }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+            
+            <div class="flex justify-end pr-8">
+                <span>Buyer:</span>
+            </div>
+            <div>
+                {{ order.order.buyer.first_name }} {{ order.order.buyer.last_name }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+            
+            <div class="flex justify-end pr-8">
+                <span>Product:</span>
+            </div>
+            <div>
+                {{ order.product.name }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Quantity:</span>
+            </div>
+            <div>
+                {{ order.quantity }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Total Price:</span>
+            </div>
+            <div>
+                ${{ order.total_price }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+    
+            <div class="col-span-2 font-bold flex justify-center pr-8 mt-8 mb-2">Shipping Address</div>
+            
+            <div class="flex justify-end pr-8">
+                <span>Street:</span>
+            </div>
+            <div>
+                {{ order.order.shipping.address.street }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>City:</span>
+            </div>
+            <div>
+                {{ order.order.shipping.address.city }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>State:</span>
+            </div>
+            <div>
+                {{ order.order.shipping.address.state }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Zip code:</span>
+            </div>
+            <div>
+                {{ order.order.shipping.address.zip_code }}
+            </div>
+
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+            <div class="col-span-2 font-bold flex justify-center pr-8 mt-8 mb-2">Delivery Status</div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Ordered Date:</span>
+            </div>
+            <div>
+                {{ order.created_at|date }}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Estimated delivery date:</span>
+            </div>
+            <div>
+                {{ order.order.shipping.estimated_delivery_date|date }}
+            </div>
+            {% if order.order.shipping.delivered_date %}
+                <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+                <div class="flex justify-end pr-8">
+                    <span>Delivered Date:</span>
+                </div>
+                <div>
+                    {{ order.order.shipping.delivered_date|date }}
+                </div>
+            {% endif %}
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Shipped:</span>
+            </div>
+
+            <div class="flex items-center">
+                {% if order.order.shipping.is_shipped %}
+                    <img src="{% static 'images/icon-yes.svg' %}" alt="" srcset="">
+                {% else %}
+                    <img src="{% static 'images/icon-no.svg' %}" alt="" srcset="">
+                {% endif %}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+
+            <div class="flex justify-end pr-8">
+                <span>Delivered:</span>
+            </div>
+
+            <div class="flex items-center">
+                {% if order.order.shipping.is_delivered %}
+                    <img src="{% static 'images/icon-yes.svg' %}" alt="" srcset="">
+                {% else %}
+                    <img src="{% static 'images/icon-no.svg' %}" alt="" srcset="">
+                {% endif %}
+            </div>
+            <hr class="col-span-2 w-full md:w-[50%] mx-auto">
+            
+        </div>
+        {% if not order.order.shipping.is_shipped %}
+            <div class="flex justify-end mb-2">
+                <a href="{% url 'store:update_shipped_status' order.id %}" class="hover:bg-green-400 border border-green-400 bg-white text-green-400 hover:text-white px-5 py-3 rounded-full hover:scale-105">Update Shipped Status</a>
+            </div>
+        {% endif %}
+        {% if not order.order.shipping.is_delivered %}
+            <div class="flex justify-end">
+                <a href="{% url 'store:update_delivery_status' order.id %}" class="hover:bg-green-400 border border-green-400 bg-white text-green-400 hover:text-white px-5 py-3 rounded-full hover:scale-105">Update Delivery Status</a>
+            </div>
+        {% endif %}
+    </section>
+    
+
+
+{% endblock content %}

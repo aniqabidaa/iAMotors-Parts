@@ -1,0 +1,37 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+    <div class="p-4 mx-auto w-11/12 my-7">
+        {% if error_message %}
+        <p class="text-red-500">{{ error_message }}</p>
+        {% endif %}
+        
+        <div class="w-10/12 md:w-6/12 mx-auto">
+            <form class="border p-4 rounded-sm border-gray-900/10 mx-auto" action="" method="post">
+                <h1 class="text-4xl mb-4 font-bold text-gray-900/70 text-center">Seller Log in</h1>
+                {% csrf_token %}
+                <div class="my-2">
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="email" id="id_email" autocomplete="email" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="email" required>
+                    </div>
+                </div>
+
+                <div class="my-2">
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="password" name="password" id="id_password" autocomplete="current-password" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="password" required>
+                    </div>
+                </div>
+
+                <div class="w-full flex flex-row justify-center items-center">
+                    <button type="submit" class="rounded-md bg-indigo-600 p-2 w-full text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Log in</button>
+                </div>
+
+                <div class="flex flex-row justify-between p-2 gap-4">
+                    <a href="{% url 'store:seller_signup' %}" class="border-b-[1px] border-gray-300 hover:border-blue-500 hover:text-blue-500">Register</a>
+                    <a href="{% url 'store:login' %}" class="border-b-[1px] border-gray-300 hover:border-blue-500 hover:text-blue-500">Log in as a Buyer</a>
+                </div>
+            </form>
+    
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iAMotors&Parts</title>
+
+    <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- tailwindcss -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- alpine.js -->
+    <!-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.8/dist/cdn.min.js"></script> -->
+    <!-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> -->
+
+    <script defer src="{% static 'js/alpine.js' %}"></script>
+    
+    <!-- styles -->
+    {% block styles %}
+    {% endblock %}
+
+    <style>
+        img {
+            max-width: 100%;
+            font-style: italic;
+        }
+        .sidebar {
+            box-shadow: 0 14px 28px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.22) !important;
+        }
+        .sidebar-open .sidebar-item {
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+        .sidebar-item:hover, .sidebar-item-active {
+            background: rgba(255,255,255,.1);
+        }
+        [x-cloak] { 
+            display: none !important; 
+        }
+
+    </style>
+</head>
+
+<body class="font-[Poppins]">
+    <div class="bg-white">
+        <div class="layout flex" x-data="sidebar"> 
+            <div x-ref="sidebar" class="sidebar min-h-screen h-[inherit] bg-[#33393f] p-5 pt-8 absolute -translate-x-full md:relative md:translate-x-0 duration-300 w-[64px] flex flex-col gap-7 text-white" @click="toggleOpen()">
+                <a href="{% url 'store:seller_index' %}">
+                    <div class="sidebar-item flex gap-3 items-center {% if sidebar_active == 'dashboard' %} sidebar-item-active {% endif %}">
+                        <ion-icon class="text-3xl" name="bar-chart-outline"></ion-icon>
+                        <span x-show="open" x-transition.duration.250ms>
+                            Dashboard
+                        </span>
+                    </div>
+                </a>
+
+                <a href="{% url 'store:seller_product_list' %}">
+                    <div class="sidebar-item flex gap-3 items-center {% if sidebar_active == 'my-products' %} sidebar-item-active {% endif %}">
+                        <ion-icon class="text-3xl" name="car-sport-outline"></ion-icon>
+                        <span x-show="open" x-transition.duration.250ms>
+                            My products
+                        </span>
+                    </div>
+                </a>
+                <a href="{% url 'store:seller_order_list' %}">
+                    <div class="sidebar-item flex gap-3 items-center {% if sidebar_active == 'orders' %} sidebar-item-active {% endif %}">
+                        <ion-icon class="text-3xl" name="list-circle-outline"></ion-icon>
+                        <span x-show="open" x-transition.duration.250ms>
+                            Orders
+                        </span>
+                    </div>
+                </a>
+            </div>
+            <div class="main-content w-full bg-[#f4f6f9]">
+                <div>
+                    <nav class="bg-white px-8 py-3">
+                        <div class="flex justify-between items-center h-12">
+                            <div class="logo mt-2">
+                                <ion-icon name="menu-outline" class="text-3xl text-gray-700 cursor-pointer" @click="toggle(); console.log('hello', open)"></ion-icon>
+                            </div>
+                            <div class="menu">
+                                <ul class="flex items-center">
+                                    <li>
+                                        <span class="">
+                                            {% if request.user.first_name %}
+                                                {{ request.user.first_name }}
+                                            {% else %}
+                                                {{ request.user.email }}
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    <li class="mx-2">
+                                        <a href="{% url 'store:logout' %}" class="text-gray-700">Logout</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div class="content px-2 md:px-8 py-3">
+                        {% if not seller.active %}
+                            <div class="text-center">
+                                <h1 class="text-sm bg-red-300 p-3 rounded-lg font-bold">Your active status is pending </h1>
+                            </div>
+                        {% endif %}
+
+                        {% block content %}
+                        
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+    </div>
+
+    <!-- ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- alpine -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('sidebar', () => ({
+                open: false,
+     
+                toggle() {
+                    this.open = ! this.open;
+                    this.$refs.sidebar.classList.toggle('w-80');
+                    this.$refs.sidebar.classList.toggle('w-[64px]');
+                    this.$refs.sidebar.classList.toggle('absolute');
+                    this.$refs.sidebar.classList.toggle('relative');
+                    this.$refs.sidebar.classList.toggle('md:relative');
+                    this.$refs.sidebar.classList.toggle('md:translate-x-0');
+                    this.$refs.sidebar.classList.toggle('-translate-x-full');
+                    this.$refs.sidebar.classList.toggle('sidebar-open');
+                },
+                toggleOpen() {
+                    if (!this.open) {
+                        this.open = true;
+                        this.$refs.sidebar.classList.toggle('w-80');
+                        this.$refs.sidebar.classList.toggle('w-[64px]');
+                        this.$refs.sidebar.classList.toggle('absolute');
+                        this.$refs.sidebar.classList.toggle('relative');
+                        this.$refs.sidebar.classList.toggle('md:relative');
+                        this.$refs.sidebar.classList.toggle('md:translate-x-0');
+                        this.$refs.sidebar.classList.toggle('-translate-x-full');
+                        this.$refs.sidebar.classList.toggle('sidebar-open');
+                    }
+                }
+            }))
+        })
+    </script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>

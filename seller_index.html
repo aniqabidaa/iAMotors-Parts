@@ -1,0 +1,158 @@
+{% extends 'store/seller_base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock styles %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <p class="text-red-500 text-center mt-4">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div class="p-5 text-center">
+        <h1 class="text-4xl font-bold">Dashboard</h1>
+    </div>
+
+    <div class="w-full md:w-11/12 mx-auto bg-white p-4 md:p-10 rounded-lg shadow-sm">
+        <section class="banner flex justify-between items-center px-10 py-5 bg-blue-400 rounded-xl w-full">
+            <div class="text-white">
+                <h1 class="text-3xl md:text-5xl  font-bold">{{ seller }}</h1>
+                <p class="">{{ request.user.email }}</p>
+                <p class="">Since: {{ seller.created_at.date }}</p>
+            </div>
+            <div class="">
+                {% with ''|center:seller.rating as range %}
+                    {% for _ in range %}
+                        <span class="fa fa-star checked text-yellow-300"></span>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+        </section>
+
+
+        <section class="sales-info my-8 px-2 md:px-10 py-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center flex items-center gap-3 shadow-lg p-4 rounded-lg justify-between md:justify-center">
+                    <div class="rounded-full bg-blue-300 h-14 w-14 flex justify-center items-center">
+                        <i class="fa fa-dollar text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2>Total Sales</h2>
+                        <p class="font-bold">{{ total_sales }}</p>
+                    </div>
+                </div>
+
+                <div class="text-center flex items-center gap-3 shadow-lg p-4 rounded-lg justify-between md:justify-center">
+                    <div class="rounded-full bg-blue-300 h-14 w-14 flex justify-center items-center">
+                        <i class="fa fa-product-hunt text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2>Total Items Sold</h2>
+                        <p class="font-bold">{{ total_items_sold }}</p>
+                    </div>
+                </div>
+
+                <div class="text-center flex items-center gap-3 shadow-lg p-4 rounded-lg justify-between md:justify-center">
+                    <div class="rounded-full bg-blue-300 h-14 w-14 flex justify-center items-center">
+                        <!-- <i class="fa fa-first-order text-3xl"></i> -->
+                        <img class="h-[25px]" src="{% static 'images/order-solid.png' %}" alt="">
+                    </div>
+                    <div>
+                        <h2>Total Orders</h2>
+                        <p class="font-bold">{{ total_orders }}</p>
+                    </div>
+                </div>
+
+                <div class="text-center flex items-center gap-3 shadow-lg p-4 rounded-lg justify-between md:justify-center">
+                    <div class="rounded-full bg-blue-300 h-14 w-14 flex justify-center items-center">
+                        <img class="h-[25px]" src="{% static 'images/order-delivered.png' %}" alt="">
+                    </div>
+                    <div>
+                        <h2>Total Delivered</h2>
+                        <p class="font-bold">{{ total_delivered_orders }}</p>
+                    </div>
+                </div>
+
+                <div class="text-center flex items-center gap-3 shadow-lg p-4 rounded-lg justify-between md:justify-center">
+                    <div class="rounded-full bg-blue-300 h-14 w-14 flex justify-center items-center">
+                        <ion-icon class="text-3xl" name="car-sport-outline"></ion-icon>
+                    </div>
+                    <div>
+                        <h2>Total Products</h2>
+                        <p class="font-bold">{{ total_products }}</p>
+                    </div>
+                </div>
+
+                <div class="text-center flex items-center gap-3 shadow-lg p-4 rounded-lg justify-between md:justify-center">
+                    <div class="rounded-full bg-blue-300 h-14 w-14 flex justify-center items-center">
+                        <ion-icon class="text-3xl" name="person-circle-outline"></ion-icon>
+                    </div>
+                    <div>
+                        <h2>Total Customer</h2>
+                        <p class="font-bold">{{ total_customers }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="recent-orders my-8 px-2 md:px-10 py-5 md:flex gap-4 md:flex-col overflow-x-auto shadow-lg rounded-lg">
+            <!-- <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Order</th>
+                        <th class="text-center">Product</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-left">Price</th>
+                        <th class="text-center">Delivered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_detail in recent_orders %}
+                        <tr>
+                            <td>{{ order_detail.id }}</td>
+                            <td class="text-center">{{ order_detail.product.name }}</td>
+                            <td class="text-center">{{ order_detail.quantity }}</td>
+                            <td>{{ order_detail.price }}</td>
+                            <td class="flex justify-center items-center">
+                                {% if order_detail.order.shipping.is_delivered %}
+                                    <img src="{% static 'images/icon-yes.svg' %}" alt="" srcset="">
+                                {% else %}
+                                    <img src="{% static 'images/icon-no.svg' %}" alt="" srcset="">
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table> -->
+            <h2>Recent orders</h2>
+            <div class="grid grid-cols-5 gap-3 shadow-sm border-b-2 border-gray-400 pb-2">
+                <div class="text-start font-bold min-w-[100px]">Order</div>
+                <div class="text-center font-bold min-w-[100px]">Product</div>
+                <div class="text-center font-bold min-w-[100px]">Quantity</div>
+                <div class="text-center font-bold min-w-[100px]">Price</div>
+                <div class="text-center font-bold min-w-[100px]">Delivered</div>
+            </div>
+    
+            {% for order_detail in recent_orders %}
+                <a href="{% url 'store:seller_order_detail' order_detail.id %}">
+                    <div class="grid grid-cols-5 gap-3 p-2 shadow-sm border-b-[1px] border-gray-300 pb-2 cursor-pointer hover:bg-blue-300 hover:rounded-lg">
+                        <div class="text-start min-w-[100px]">{{ order_detail.id }}</div>
+                        <div class="text-center min-w-[100px]">{{ order_detail.product.name }}</div>
+                        <div class="text-center min-w-[100px]">{{ order_detail.quantity }}</div>
+                        <div class="text-center min-w-[100px]">{{ order_detail.price }}</div>
+                        <div class="text-center min-w-[100px] flex justify-center items-center">
+                            {% if order_detail.order.shipping.is_delivered %}
+                                <img src="{% static 'images/icon-yes.svg' %}" alt="" srcset="">
+                            {% else %}
+                                <img src="{% static 'images/icon-no.svg' %}" alt="" srcset="">
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock content %}

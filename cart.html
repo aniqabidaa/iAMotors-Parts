@@ -1,0 +1,64 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="p-4 mx-auto w-11/12 my-7">      
+        <h1 class="text-3xl font-semibold text-gray-900 text-center mb-8">Cart</h1>  
+        <div class="w-10/12 mx-auto grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div class="col-span-3 md:border-r md:pr-4 md:border-gray-200">
+                {% for item in cart_items %}
+                    <div class="flex flex-col md:flex-row justify-between gap-x-4 md:items-center border-b border-gray-200 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-[100px]">
+                                <img class="w-full h-[60px] object-cover" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ item.product.name }}</h3>
+                                <!-- <p class="text-sm text-gray-500">{{ item.product.description }}</p> -->
+                                <p class="text-lg font-semibold text-gray-900">${{ item.product.price }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-4">
+                            <a href="{% url 'store:increment_cart_item' item.id %}" class="h-[20px] w-[20px] flex justify-center items-center">
+                                <img src="{% static 'images/arrow-up.png' %}" alt="" class="h-[12px] block cursor-pointer">
+                            </a>
+                            <p class="text-lg font-semibold text-gray-900">{{ item.quantity }}</p>
+                            <a href="{% url 'store:decrement_cart_item' item.id %}" class="h-[20px] w-[20px] flex justify-center items-center">
+                                <img src="{% static 'images/arrow-down.png' %}" alt="" class="block h-[12px] cursor-pointer">
+                            </a>
+                            <a href="{% url 'store:remove_from_cart' item.id %}" class="btn p-2 px-5 bg-red-300 hover:bg-red-400 rounded-lg">Remove</a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% if not cart_items %}
+                    <div class="flex justify-center items-center h-[200px]">
+                        <h3 class="text-lg font-semibold text-gray-900">Your cart is empty</h3>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-span-1 p-4">
+                {% for item in cart_items %}
+                    <div class="flex justify-between items-center border-b border-gray-200 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ item.product.name }}</h3>
+                        <p class="text-lg font-semibold text-gray-900">${{ item.total_price }}</p>
+                    </div>
+                {% endfor %}
+                {% if cart_items %}
+                    <div class="flex justify-between items-center border-b py-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Total</h3>
+                        <p class="text-lg font-semibold text-gray-900">${{ cart_total_price }}</p>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <a href="{% url 'store:clear_cart' %}" class="btn p-2 px-5 bg-red-300 hover:bg-red-400 rounded-lg">Clear Cart</a>
+                        <a href="{% url 'store:checkout' %}" class="btn p-2 px-5 bg-indigo-300 hover:bg-indigo-400 rounded-lg">Checkout</a>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="flex justify-center mt-8">
+            <a href="{% url 'store:order_history' %}" class="px-5 py-3 bg-amber-300 rounded-lg border border-amber-300 hover:bg-white hover:text-amber-500">Order Hisotory</a>
+        </div>
+    </div>
+{% endblock %}

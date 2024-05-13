@@ -1,0 +1,170 @@
+{% extends 'store/base.html' %}
+
+{% block styles %}
+    <script src="https://js.stripe.com/v3/"></script>
+{% endblock styles %}   
+
+{% block content %}
+<div class="my-10 mx-auto w-11/12 px-4">
+    <h1 class="text-2xl font-bold text-center">Checkout</h1>
+
+    <div class="order-details">
+        total: {{ cart_total_price }}
+    </div>
+    
+    <div class="stripe-card-info w-full md:w-6/12 mx-auto">
+        <form id="payment-form">
+            {% csrf_token %}
+            <h1>Shipping Info</h1>
+            <div class="my-2 mb-5 flex-col md:flex-row flex gap-2">
+                <div class="flex flex-col">
+                    <label for="street" class="font-sm text-sm text-gray-500">Street</label>
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="street" id="street" autocomplete="street" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="street" maxlength="255" required value="{{address.street}}">
+                    </div>
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="city" class="font-sm text-sm text-gray-500">City</label>
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="city" id="city" autocomplete="city" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="city" required maxlength="50" value="{{address.city}}">
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <label for="state" class="font-sm text-sm text-gray-500">State</label>
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="state" id="state" autocomplete="state" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="state" required maxlength="50" value="{{address.state}}">
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <label for="zip" class="font-sm text-sm text-gray-500">Zip code</label>
+                    <div class="flex border-[1px] border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="zip" id="zip" autocomplete="zip" class="block flex-1 border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="zip" required maxlength="10" value="{{address.zip_code}}">
+                    </div>
+                </div>
+            </div>
+
+            <div id="payment-element">
+            <!-- Elements will create form elements here -->
+            </div>
+            <button id="submit" class="my-3 px-5 py-3 border border-1 border-indigo-400 bg-white text-indigo-400 hover:bg-indigo-400 hover:text-white rounded-md">Pay {{ cart_total_price }}</button>
+            <div id="error-message" class="text-red-500">
+            <!-- Display error message to your customers here -->
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+    // Get the CSRF token
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log(csrftoken, 'csrftoken');
+    console.log(parseFloat('{{ cart_total_price }}') * 100, '{{ order_id }}', 'order_id');
+
+    const options = {
+        mode: 'payment',
+        amount: parseFloat('{{ cart_total_price }}') * 100,
+        currency: 'usd',
+        // Fully customizable with appearance API.
+        appearance: {
+        },
+    };
+
+    const stripe = Stripe('{{ stripe_public_key }}');
+        
+    // Set up Stripe.js and Elements to use in checkout form
+    const elements = stripe.elements(options);
+    
+    // Create and mount the Payment Element
+    const paymentElement = elements.create('payment', {
+        layout: {
+            type: 'tabs',
+            defaultCollapsed: false,
+        }
+    });
+    paymentElement.mount('#payment-element');
+
+
+
+    const form = document.getElementById('payment-form');
+    const submitBtn = document.getElementById('submit');
+
+    const handleError = (error) => {
+    const messageContainer = document.querySelector('#error-message');
+        messageContainer.textContent = error.message;
+        submitBtn.disabled = false;
+    }
+
+    form.addEventListener('submit', async (event) => {
+        // We don't want to let default form submission happen here,
+        // which would refresh the page.
+        event.preventDefault();
+
+        // Prevent multiple form submissions
+        if (submitBtn.disabled) {
+            return;
+        }
+
+        // Disable form submission while loading
+        submitBtn.disabled = true;
+
+        // Trigger form validation and wallet collection
+        const {error: submitError} = await elements.submit();
+        if (submitError) {
+            handleError(submitError);
+            return;
+        }
+
+        // Create the PaymentIntent and obtain clientSecret
+        const res = await fetch("/create-intent", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify({
+                amount: parseFloat('{{ cart_total_price }}') * 100,
+                currency: 'usd',
+                order_id: '{{ order_id }}',
+                shipping: {
+                    address: {
+                        street: document.getElementById('street').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip_code: document.getElementById('zip').value,
+                    }
+                }
+            }),
+        });
+
+        const {client_secret: clientSecret} = await res.json();
+
+        // Confirm the PaymentIntent using the details collected by the Payment Element
+        const {error} = await stripe.confirmPayment({
+            elements,
+            clientSecret,
+            confirmParams: {
+                return_url: window.location.origin + '/payment-success/',
+            },
+        });
+
+        if (error) {
+            // This point is only reached if there's an immediate error when
+            // confirming the payment. Show the error to your customer (for example, payment details incomplete)
+            handleError(error);
+        } else {
+            // Your customer is redirected to your `return_url`. For some payment
+            // methods like iDEAL, your customer is redirected to an intermediate
+            // site first to authorize the payment, then redirected to the `return_url`.
+        }
+    });
+
+
+
+</script>
+{% endblock scripts %}

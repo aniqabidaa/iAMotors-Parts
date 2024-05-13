@@ -1,0 +1,68 @@
+{% extends 'store/seller_base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="p-5 text-center">
+        <h1 class="text-4xl font-bold">Orders</h1>
+    </div>
+
+    <section class="orders w-full md:w-11/12 mx-auto my-8 px-2 md:px-10 py-5 md:flex gap-4 md:flex-col overflow-x-auto shadow-lg rounded-lg">
+            <!-- <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Order</th>
+                        <th class="text-center">Product</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-left">Price</th>
+                        <th class="text-center">Delivered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_detail in recent_orders %}
+                        <tr>
+                            <td>{{ order_detail.id }}</td>
+                            <td class="text-center">{{ order_detail.product.name }}</td>
+                            <td class="text-center">{{ order_detail.quantity }}</td>
+                            <td>{{ order_detail.price }}</td>
+                            <td class="flex justify-center items-center">
+                                {% if order_detail.order.shipping.is_delivered %}
+                                    <img src="{% static 'images/icon-yes.svg' %}" alt="" srcset="">
+                                {% else %}
+                                    <img src="{% static 'images/icon-no.svg' %}" alt="" srcset="">
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table> -->
+            <div class="grid grid-cols-5 gap-3 shadow-sm border-b-2 border-gray-400 pb-2">
+                <div class="text-start font-bold min-w-[100px]">Order</div>
+                <div class="text-center font-bold min-w-[100px]">Product</div>
+                <div class="text-center font-bold min-w-[100px]">Quantity</div>
+                <div class="text-center font-bold min-w-[100px]">Price</div>
+                <div class="text-center font-bold min-w-[100px]">Delivered</div>
+            </div>
+    
+            {% for order_detail in orders %}
+                <a href="{% url 'store:seller_order_detail' order_detail.id %}">
+                    <div class="grid grid-cols-5 gap-3 p-2 shadow-sm border-b-[1px] border-gray-300 pb-2 cursor-pointer hover:bg-blue-300 hover:rounded-lg">
+                        <div class="text-start min-w-[100px]">{{ order_detail.id }}</div>
+                        <div class="text-center min-w-[100px]">{{ order_detail.product.name }}</div>
+                        <div class="text-center min-w-[100px]">{{ order_detail.quantity }}</div>
+                        <div class="text-center min-w-[100px]">{{ order_detail.price }}</div>
+                        <div class="text-center min-w-[100px] flex justify-center items-center">
+                            {% if order_detail.order.shipping.is_delivered %}
+                                <img src="{% static 'images/icon-yes.svg' %}" alt="" srcset="">
+                            {% else %}
+                                <img src="{% static 'images/icon-no.svg' %}" alt="" srcset="">
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+    </section>
+    
+
+
+{% endblock content %}

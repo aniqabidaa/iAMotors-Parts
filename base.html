@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth h-full">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iAMotors&Parts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- tailwindcss -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- alpine.js -->
+    <!-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.8/dist/cdn.min.js"></script> -->
+
+    <script defer src="{% static 'js/alpine.js' %}"></script>
+    
+    <!-- styles -->
+    {% block styles %}
+    {% endblock %}
+
+    <style>
+        img {
+            max-width: 100%;
+            font-style: italic;
+        }
+        [x-cloak] { 
+            display: none !important; 
+        }
+    </style>
+</head>
+
+<body class="h-full font-[Poppins]">
+    <div class="bg-white flex flex-col h-full w-full">
+        <!-- header -->
+        <header class="z-[1050] w-full fixed top-0 shadow-md bg-white">
+            <nav class="flex justify-between items-center w-11/12 mx-auto p-4">
+                <div>
+                    <span class="text-2xl font-bold text-gray-900 cursor-pointer">
+                        <a href="{% url 'store:index' %}">iAMotors&Parts</a>
+                    </span>
+                </div>
+                <div class="nav-links duration-500 md:static absolute bg-white md:bg-transparent left-0 top-[-1000%] md:w-auto  w-full flex items-center px-5 z-50 shadow-md md:shadow-none">
+                    <ul class="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8 p-3 py-[30px] md:py-3">
+                        <li>
+                            <a class="text-sm font-semibold leading-6 text-gray-900" href="{% url 'store:product_list' %}">Products</a>
+                        </li>
+                        <li class="relative rounded-sm hidden md:block max-h-[350px]" x-data="{categoryOpen: false}" @mouseover="categoryOpen=true" @mouseleave="categoryOpen=false">
+                            <span class="text-sm font-semibold leading-6 text-gray-900 cursor-pointer">Categories</span>
+                            <div>
+                                <ul x-show="categoryOpen" x-cloak class="absolute bg-white shadow-md top-[20px] left-0 w-[200px] max-h-[350px] overflow-auto">
+                                    {% for category in categories %}
+                                        <li class="hover:bg-gray-300 p-2">
+                                            <a href="{% url 'store:category_product_list' category.id %}" class="text-sm text-gray-900 h-full w-full block">{{ category.name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="relative rounded-sm block md:hidden z-[51]" x-data="{categoryOpen: false}" @click="categoryOpen=true" @click.outside="categoryOpen=false">
+                            <span class="text-sm font-semibold leading-6 text-gray-900 cursor-pointer">Categories</span>
+                            <div>
+                                <ul x-show="categoryOpen" x-cloak class="absolute bg-white shadow-md top-[20px] left-0 w-[200px] max-h-[350px] overflow-auto">
+                                    {% for category in categories %}
+                                        <li class="hover:bg-gray-300 p-2">
+                                            <a href="{% url 'store:category_product_list' category.id %}" class="text-sm text-gray-900 h-full w-full block">{{ category.name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- <li>
+                            <a class="text-sm font-semibold leading-6 text-gray-900" href="#">Resource</a>
+                        </li> -->
+                        {% if not request.user.is_authenticated %}
+                            <li>
+                                <a class="text-sm font-semibold leading-6 text-gray-900" href="{% url 'store:seller_signup' %}">Sell</a>
+                            </li>
+                        {% elif request.user.is_authenticated and request.user.is_seller %}
+                            <li>
+                                <a class="text-sm font-semibold leading-6 text-gray-900" href="{% url 'store:seller_index' %}">Dashboard</a>
+                            </li>
+                            <li>
+                                <a class="text-sm font-semibold leading-6 text-gray-900" href="{% url 'store:seller_product_list' %}">My Products</a>
+                            </li>
+                        {% elif request.user.is_authenticated and not request.user.is_seller %}
+                            <li>
+                                <a class="text-sm font-semibold leading-6 text-gray-900" href="{% url 'store:upgrade_to_seller' %}">Sell</a>
+                            </li>
+                        {% endif %}
+                        <li x-data="search" >
+                            <form 
+                                action="{% url 'store:product_list' %}" 
+                                method="get" 
+                                class="search-form flex flex-row content-center items-center relative"
+                                @click.outside="isFilterOpen=false"
+                            >
+                                <ion-icon class="text-2xl me-2 cursor-pointer" name="filter-outline" @click="isFilterOpen = true"></ion-icon>
+                                <input type="text" name="search" id="search" placeholder="Search" class="rounded-md p-1.5 text-sm text-gray-900 border-[1px] border-[#e8e1fb]">
+                                <button type="submit"><ion-icon name="search" class="text-2xl ms-2"></ion-icon></button> 
+
+                                <div 
+                                    class="flex flex-col md:flex-row gap-3 absolute p-3 bg-white shadow-xl top-[30px] left-0 md:left-[-100px]" 
+                                    x-show="isFilterOpen" 
+                                    x-cloak
+                                    x-transition.delay.500
+                                    x-transition.opacity
+                                >
+                                    <select name="models" id="car-models" class="rounded-md p-1.5 text-sm text-gray-900 border-[1px] border-[#e8e1fb] max-w-[130px] !max-h-[350px]">
+                                        <option value="">Select Model</option>
+                                        <template x-for="(model, index) in models">
+                                            <option x-model="model" x-text="model"></option>
+                                        </template>
+                                    </select>
+                                    <select name="year" id="year" class="rounded-md p-1.5 text-sm text-gray-900 border-[1px] border-[#e8e1fb] max-w-[130px] max-h-[350px]">
+                                        <option value="">Select year</option>
+    
+                                        <template x-for="(year, index) in year">
+                                            <option x-model="year" x-text="year"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </form>
+                        </li>
+                        <li>
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'store:logout' %}" class="md:hidden text-sm font-semibold leading-6 text-gray-900">
+                                    Log out 
+                                    <span aria-hidden="true">&rarr;</span>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'store:login' %}" class="md:hidden text-sm font-semibold leading-6 text-gray-900">
+                                    Log in 
+                                    <span aria-hidden="true">&rarr;</span>
+                                </a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex items-center gap-6 z-50">
+                    <a href="{% url 'store:cart' %}" class="text-sm font-semibold leading-6 text-gray-900 flex items-center">
+                        <img class="h-[20px]" src="{% static 'images/cart-icon.png' %}" alt="" srcset="">
+                        <span class="border border-black px-1 rounded-full">{{ total_items }}</span>
+                    </a>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'store:logout' %}" class="hidden md:block text-sm font-semibold leading-6 text-gray-900">
+                            Log out 
+                            <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'store:login' %}" class="hidden md:block text-sm font-semibold leading-6 text-gray-900">
+                            Log in 
+                            <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    {% endif %}
+                    <ion-icon onclick="onToggleMenu(this)" name="menu" class="text-3xl cursor-pointer md:hidden"></ion-icon>
+                </div>
+            </nav>
+        </header>
+
+        <div class="flex-1 mt-[80px]">
+
+            {% block content %}
+            
+            {% endblock %}
+        </div>
+
+        <!-- footer -->
+        <footer>
+            <!-- component -->
+            <!-- This is an example component -->
+            <div class="bg-gray-900 w-full">
+                <div class="max-w-2xl mx-auto text-white py-6">
+                    <div class="flex flex-col md:flex-row md:justify-between items-center text-sm text-gray-400">
+                        <p class="order-2 md:order-1 mt-8 md:mt-0"> &copy; iAMotors&Parts, 2024 </p>
+                        <div class="order-1 md:order-2">
+                            <span class="px-2">About us</span>
+                            <span class="px-2 border-l">Contact us</span>
+                            <span class="px-2 border-l">Privacy Policy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script>
+        //function toggleMenu(el) {
+        //    console.log("hello there")
+        //    const mobMenu = document.querySelector('.mob-menu');
+        //    const menuBtn = document.querySelectorAll('.menu-btn');
+        //    // mobMenu.classList.toggle('hidden');
+        //    // mobMenu.classList.toggle('top-0');
+        //    mobMenu.classList.toggle('top-0');
+        //    mobMenu.classList.toggle('top-[-1000%]');
+//
+        //    menuBtn.forEach(btn => {
+        //        btn.name = btn.name === 'menu-outline' ? 'close-outline' : 'menu-outline';
+        //    });
+        //}
+        const navLinks = document.querySelector('.nav-links')
+        function onToggleMenu(e){
+            e.name = e.name === 'menu' ? 'close' : 'menu'
+            navLinks.classList.toggle('top-[0%]')
+        }
+
+        document.addEventListener('alpine:init', () => {
+			console.log('alpine:init')
+			Alpine.data('search', () => ({
+                isFilterOpen: false,
+                models: [],
+                year: [],
+				init() {
+                    for (let i = 2025; i >= 1990; i--) {
+                        this.year.push(i)
+                    }
+                    
+                    fetch(`${window.location.origin}/api/get-car-models/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.models = data
+                        })
+                    console.log('models:', this.models)
+				}
+			}));
+		});
+    </script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>
